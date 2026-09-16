@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Profit Ledger — Free Demo</title>
+<meta name="description" content="See which Etsy or Shopify listings actually make money — free demo, 3 listings, no signup.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ctext y='20' font-size='20'%3E%F0%9F%A7%BE%3C/text%3E%3C/svg%3E">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg: #faf9f6;
+    --surface: #ffffff;
+    --surface-2: #f2f0ea;
+    --border: #e3e0d8;
+    --text: #211f1b;
+    --text-muted: #6e6a61;
+    --accent: #2e6f4e;
+    --accent-strong: #1f4f37;
+    --accent-soft: #e4f0e8;
+    --warn: #8a5f0a;
+    --warn-soft: #fbf0dc;
+    --danger: #ae3b25;
+    --danger-soft: #fae7e1;
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #17181a;
+      --surface: #1e2022;
+      --surface-2: #24262a;
+      --border: #33363a;
+      --text: #ecebe4;
+      --text-muted: #9c988f;
+      --accent: #6ab68c;
+      --accent-strong: #8ed1aa;
+      --accent-soft: #1d2e24;
+      --warn: #d9a63f;
+      --warn-soft: #332711;
+      --danger: #e2846a;
+      --danger-soft: #3a2019;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #17181a;
+    --surface: #1e2022;
+    --surface-2: #24262a;
+    --border: #33363a;
+    --text: #ecebe4;
+    --text-muted: #9c988f;
+    --accent: #6ab68c;
+    --accent-strong: #8ed1aa;
+    --accent-soft: #1d2e24;
+    --warn: #d9a63f;
+    --warn-soft: #332711;
+    --danger: #e2846a;
+    --danger-soft: #3a2019;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); }
+  body {
+    color: var(--text);
+    font-family: var(--font-body);
+    padding-inline: 20px;
+    padding-block: 32px;
+    max-width: 980px;
+    margin-inline: auto;
+    line-height: 1.5;
+  }
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.8rem, 4vw, 2.4rem);
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+    margin: 0 0 6px;
+  }
+  .lede {
+    color: var(--text-muted);
+    max-width: 62ch;
+    margin: 0 0 4px;
+    font-size: 1.02rem;
+  }
+  .lede-sub {
+    color: var(--text-muted);
+    max-width: 62ch;
+    margin: 0 0 28px;
+    font-size: 0.92rem;
+  }
+  .lede-sub strong { color: var(--text); }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .stat-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+  .stat-value {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .panel h2 {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin: 0 0 14px;
+  }
+
+  form#addForm {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+    align-items: end;
+  }
+  .field { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+  .field label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+  }
+  .field input, .field select {
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: var(--bg);
+    color: var(--text);
+    width: 100%;
+  }
+  .field input:focus, .field select:focus, button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+
+  details.advanced { grid-column: 1 / -1; margin-top: 2px; }
+  details.advanced summary {
+    cursor: pointer;
+    font-size: 0.82rem;
+    color: var(--accent-strong);
+    font-weight: 500;
+  }
+  .advanced-fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+  }
+  #etsyNote {
+    grid-column: 1 / -1;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    background: var(--surface-2);
+    border-radius: 7px;
+    padding: 8px 10px;
+  }
+
+  .btn {
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 10px 18px;
+    border-radius: 7px;
+    border: 1px solid var(--accent);
+    background: var(--accent);
+    color: #fff;
+    cursor: pointer;
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+  .btn:disabled {
+    background: var(--surface-2);
+    border-color: var(--border);
+    color: var(--text-muted);
+    cursor: not-allowed;
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    font-weight: 500;
+  }
+
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; min-width: 720px; }
+  thead th {
+    text-align: left;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    padding: 0 10px 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 12px 10px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.92rem;
+    vertical-align: middle;
+  }
+  td.num { font-variant-numeric: tabular-nums; text-align: right; }
+  td.item-name { font-weight: 500; }
+  .platform-tag {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    display: block;
+    margin-top: 2px;
+  }
+  .pill {
+    display: inline-block;
+    font-size: 0.76rem;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-variant-numeric: tabular-nums;
+  }
+  .pill.good { background: var(--accent-soft); color: var(--accent-strong); }
+  .pill.warn { background: var(--warn-soft); color: var(--warn); }
+  .pill.danger { background: var(--danger-soft); color: var(--danger); }
+  .row-remove {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 2px 6px;
+  }
+  .row-remove:hover { color: var(--danger); }
+
+  .foot-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .cap-note { font-size: 0.82rem; color: var(--text-muted); }
+
+  .upsell {
+    border: 1px solid var(--accent);
+    background: var(--accent-soft);
+    border-radius: 12px;
+    padding: 18px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+  }
+  .upsell strong { display: block; margin-bottom: 3px; }
+  .upsell p { margin: 0; color: var(--text-muted); font-size: 0.88rem; max-width: 46ch; }
+  .badge-soon {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--accent-strong);
+    background: var(--surface);
+    border: 1px solid var(--accent);
+    padding: 8px 14px;
+    border-radius: 7px;
+    white-space: nowrap;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  footer {
+    margin-top: 30px;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<h1>Profit Ledger</h1>
+<p class="lede">See which listings are actually worth making — not just what one sale nets you, but what's left across your whole shop once materials, shipping, ad spend and your time are counted.</p>
+<p class="lede-sub"><strong>Free fee calculators answer one question: what does this sale net me?</strong> They don't remember your shop, don't count what materials or your hours cost you, and won't tell you a "busy" month is quietly built on a loss-leader. This does.</p>
+
+<div class="stats" id="stats"></div>
+
+<div class="panel">
+  <h2>Add a listing</h2>
+  <form id="addForm">
+    <div class="field">
+      <label for="f-name">Item name</label>
+      <input id="f-name" required placeholder="e.g. Soy candle, 8oz">
+    </div>
+    <div class="field">
+      <label for="f-platform">Platform</label>
+      <select id="f-platform">
+        <option value="etsy">Etsy</option>
+        <option value="shopify">Shopify</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="f-price">Sale price ($)</label>
+      <input id="f-price" type="number" min="0" step="0.01" required placeholder="24.00">
+    </div>
+    <div class="field">
+      <label for="f-ship-charged">Shipping charged ($)</label>
+      <input id="f-ship-charged" type="number" min="0" step="0.01" value="0">
+    </div>
+    <div class="field">
+      <label for="f-materials">Materials / COGS ($)</label>
+      <input id="f-materials" type="number" min="0" step="0.01" value="0">
+    </div>
+    <div class="field">
+      <label for="f-ship-cost">Shipping you paid ($)</label>
+      <input id="f-ship-cost" type="number" min="0" step="0.01" value="0">
+    </div>
+    <div class="field">
+      <label for="f-ads">Ad spend per sale ($)</label>
+      <input id="f-ads" type="number" min="0" step="0.01" value="0">
+    </div>
+    <div class="field">
+      <label for="f-hours">Hours spent</label>
+      <input id="f-hours" type="number" min="0" step="0.05" value="0.5">
+    </div>
+
+    <details class="advanced" id="advancedFees" hidden>
+      <summary>Fee settings for this platform</summary>
+      <div class="advanced-fields">
+        <div class="field">
+          <label for="f-proc-pct">Payment processing (%)</label>
+          <input id="f-proc-pct" type="number" min="0" step="0.1" value="2.9">
+        </div>
+        <div class="field">
+          <label for="f-proc-flat">Processing flat fee ($)</label>
+          <input id="f-proc-flat" type="number" min="0" step="0.01" value="0.30">
+        </div>
+      </div>
+    </details>
+    <p id="etsyNote">Using current Etsy US rates: $0.20 listing fee + 6.5% transaction fee + 3% + $0.25 payment processing.</p>
+
+    <button type="submit" class="btn" id="addBtn">Add listing</button>
+  </form>
+</div>
+
+<div class="panel">
+  <h2>Your listings</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th style="text-align:right">Revenue</th>
+          <th style="text-align:right">Fees</th>
+          <th style="text-align:right">Materials + ship</th>
+          <th style="text-align:right">Net profit</th>
+          <th style="text-align:right">Margin</th>
+          <th style="text-align:right">$ / hour</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+  <div class="foot-row">
+    <span class="cap-note" id="capNote"></span>
+    <button class="btn btn-ghost" id="resetBtn" type="button">Reset to examples</button>
+  </div>
+</div>
+
+<div class="upsell">
+  <div>
+    <strong>Full version: unlimited listings + CSV export</strong>
+    <p>Track your entire shop, export for your bookkeeping, and keep it saved between visits — no subscription, one-time purchase.</p>
+  </div>
+  <a class="badge-soon" href="https://shawniverse756.gumroad.com/l/wmrblj" target="_blank" rel="noopener">Get the full version — $14 &rarr;</a>
+</div>
+
+<footer>Profit Ledger — your numbers stay in this browser only. Nothing is uploaded or shared.</footer>
+
+<script>
+(function () {
+  var CAP = 3;
+  var STORAGE_KEY = 'profitLedgerListings';
+
+  var examples = [
+    { id: 'ex1', name: 'Hand-poured soy candle, 8oz', platform: 'etsy', price: 24.00, shipCharged: 5.00, materials: 6.50, shipCost: 4.20, ads: 1.10, hours: 0.75, procPct: 2.9, procFlat: 0.30 },
+    { id: 'ex2', name: 'Personalized name necklace', platform: 'etsy', price: 12.00, shipCharged: 3.99, materials: 5.80, shipCost: 4.50, ads: 2.25, hours: 0.40, procPct: 2.9, procFlat: 0.30 }
+  ];
+
+  function loadListings() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) {}
+    return examples.slice();
+  }
+  function saveListings(list) {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch (e) {}
+  }
+
+  var listings = loadListings();
+
+  function money(n) {
+    var sign = n < 0 ? '-' : '';
+    return sign + '$' + Math.abs(n).toFixed(2);
+  }
+
+  function calc(l) {
+    var revenue = l.price + l.shipCharged;
+    var fees;
+    if (l.platform === 'etsy') {
+      var listingFee = 0.20;
+      var transactionFee = revenue * 0.065;
+      var processing = revenue * 0.03 + 0.25;
+      fees = listingFee + transactionFee + processing + l.ads;
+    } else {
+      var pct = (l.procPct != null ? l.procPct : 2.9) / 100;
+      var flat = l.procFlat != null ? l.procFlat : 0.30;
+      fees = revenue * pct + flat + l.ads;
+    }
+    var otherCosts = l.materials + l.shipCost;
+    var netProfit = revenue - fees - otherCosts;
+    var margin = revenue > 0 ? (netProfit / revenue) * 100 : 0;
+    var hourly = l.hours > 0 ? netProfit / l.hours : null;
+    return { revenue: revenue, fees: fees, otherCosts: otherCosts, netProfit: netProfit, margin: margin, hourly: hourly };
+  }
+
+  function classify(margin) {
+    if (margin >= 30) return 'good';
+    if (margin >= 10) return 'warn';
+    return 'danger';
+  }
+
+  function render() {
+    var rowsEl = document.getElementById('rows');
+    rowsEl.innerHTML = '';
+
+    var totalRevenue = 0, totalProfit = 0, marginSum = 0, hourlySum = 0, hourlyCount = 0;
+
+    listings.forEach(function (l) {
+      var c = calc(l);
+      totalRevenue += c.revenue;
+      totalProfit += c.netProfit;
+      marginSum += c.margin;
+      if (c.hourly !== null) { hourlySum += c.hourly; hourlyCount++; }
+
+      var cls = classify(c.margin);
+      var tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td class="item-name">' + escapeHtml(l.name) + '<span class="platform-tag">' + labelPlatform(l.platform) + '</span></td>' +
+        '<td class="num">' + money(c.revenue) + '</td>' +
+        '<td class="num">' + money(c.fees) + '</td>' +
+        '<td class="num">' + money(c.otherCosts) + '</td>' +
+        '<td class="num">' + money(c.netProfit) + '</td>' +
+        '<td class="num"><span class="pill ' + cls + '">' + c.margin.toFixed(0) + '%</span></td>' +
+        '<td class="num">' + (c.hourly === null ? '—' : money(c.hourly)) + '</td>' +
+        '<td><button class="row-remove" data-id="' + l.id + '" title="Remove" aria-label="Remove listing">✕</button></td>';
+      rowsEl.appendChild(tr);
+    });
+
+    var statsEl = document.getElementById('stats');
+    var n = listings.length;
+    var avgMargin = n ? (marginSum / n) : 0;
+    var avgHourly = hourlyCount ? (hourlySum / hourlyCount) : null;
+    statsEl.innerHTML =
+      stat('Total revenue', money(totalRevenue)) +
+      stat('Total net profit', money(totalProfit)) +
+      stat('Average margin', n ? avgMargin.toFixed(0) + '%' : '—') +
+      stat('Average $ / hour', avgHourly === null ? '—' : money(avgHourly));
+
+    var capNote = document.getElementById('capNote');
+    var addBtn = document.getElementById('addBtn');
+    if (n >= CAP) {
+      capNote.textContent = 'Free version limit reached (' + CAP + ' listings). Remove one to add another, or wait for the full version.';
+      addBtn.disabled = true;
+    } else {
+      capNote.textContent = n + ' of ' + CAP + ' free listings used.';
+      addBtn.disabled = false;
+    }
+
+    rowsEl.querySelectorAll('.row-remove').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        listings = listings.filter(function (l) { return l.id !== btn.dataset.id; });
+        saveListings(listings);
+        render();
+      });
+    });
+  }
+
+  function stat(label, value) {
+    return '<div class="stat"><div class="stat-label">' + label + '</div><div class="stat-value">' + value + '</div></div>';
+  }
+  function labelPlatform(p) {
+    return p === 'etsy' ? 'Etsy' : p === 'shopify' ? 'Shopify' : 'Other';
+  }
+  function escapeHtml(s) {
+    return s.replace(/[&<>"']/g, function (c) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
+    });
+  }
+
+  document.getElementById('f-platform').addEventListener('change', function () {
+    var adv = document.getElementById('advancedFees');
+    var note = document.getElementById('etsyNote');
+    if (this.value === 'etsy') {
+      adv.hidden = true;
+      note.hidden = false;
+    } else {
+      adv.hidden = false;
+      note.hidden = true;
+    }
+  });
+
+  document.getElementById('addForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (listings.length >= CAP) return;
+    var platform = document.getElementById('f-platform').value;
+    var listing = {
+      id: 'l' + Date.now(),
+      name: document.getElementById('f-name').value.trim() || 'Untitled listing',
+      platform: platform,
+      price: parseFloat(document.getElementById('f-price').value) || 0,
+      shipCharged: parseFloat(document.getElementById('f-ship-charged').value) || 0,
+      materials: parseFloat(document.getElementById('f-materials').value) || 0,
+      shipCost: parseFloat(document.getElementById('f-ship-cost').value) || 0,
+      ads: parseFloat(document.getElementById('f-ads').value) || 0,
+      hours: parseFloat(document.getElementById('f-hours').value) || 0,
+      procPct: parseFloat(document.getElementById('f-proc-pct').value) || 2.9,
+      procFlat: parseFloat(document.getElementById('f-proc-flat').value) || 0.30
+    };
+    listings.push(listing);
+    saveListings(listings);
+    this.reset();
+    document.getElementById('f-hours').value = '0.5';
+    document.getElementById('f-platform').dispatchEvent(new Event('change'));
+    render();
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', function () {
+    listings = examples.slice();
+    saveListings(listings);
+    render();
+  });
+
+  document.getElementById('f-platform').dispatchEvent(new Event('change'));
+  render();
+})();
+</script>
+</body>
+</html>
